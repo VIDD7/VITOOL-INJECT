@@ -1,29 +1,29 @@
 VITOOL - Alat Manajemen Akrab & Pembelian Paket Data
 
 Alat ini dirancang untuk membantu Anda mengelola akun reseller Melinda Store dan mempercepat proses transaksi.
-⚠️ WARNING PENTING!
+⚠️ Peringatan Penting!
 
-    DAFTAR AKUN RESELLER melalui website resmi: https://melinda-store.my.id/
+    Daftar Akun Reseller melalui website resmi: https://melinda-store.my.id/
 
-    MINTA API_KEY ke admin melalui link yang tersedia di website setelah pendaftaran.
+    Minta API_KEY ke admin melalui tautan yang tersedia di website setelah pendaftaran.
 
-    TOPUP SALDO tetap dilakukan melalui website resmi.
+    Topup Saldo tetap dilakukan melalui website resmi.
 
-    JIKA ADMIN PADA WEB TIDAK MERESPON, silakan hubungi saya melalui Telegram: https://t.me/vidynnn
+    Jika admin pada web tidak merespon, silakan hubungi saya melalui Telegram: @vidynnn
 
-    DONASI ADMIN jika Anda merasa terbantu dengan alat ini.
+    Donasi Admin jika Anda merasa terbantu dengan alat ini.
 
-⚙️ FUNGSI UTAMA:
+⚙️ Fungsi Utama:
 
-    UNREG PAKET tanpa perlu mencabut kartu di modem Anda, sangat berguna jika Anda menggunakan OpenWRT.
+    Unreg Paket tanpa perlu mencabut kartu di modem Anda, sangat berguna jika Anda menggunakan OpenWRT.
 
-    BERFUNGSI SEBAGAI BACKUP jika website utama mengalami down time.
+    Berfungsi sebagai backup jika website utama mengalami down time.
 
-    MANAJEMEN AKRAB LENGKAP, termasuk menambah/menghapus pengelola dan anggota.
+    Manajemen Akrab Lengkap, termasuk menambah/menghapus pengelola dan anggota.
 
-    MEMPERCEPAT PROSES TRANSAKSI Anda.
+    Mempercepat Proses Transaksi Anda.
 
-🚀 LANGKAH-LANGKAH PENGGUNAAN (STEPS):
+🚀 Langkah-Langkah Penggunaan (STEPS):
 
 Ikuti perintah di bawah ini di terminal Anda untuk menjalankan VITOOL:
 
