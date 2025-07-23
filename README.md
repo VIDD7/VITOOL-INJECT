@@ -9,7 +9,7 @@ Alat ini dirancang untuk membantu Anda mengelola akun reseller Melinda Store dan
 
     TOPUP SALDO tetap dilakukan melalui website resmi.
 
-    JIKA ADMIN PADA WEB TIDAK MERESPON, silakan hubungi saya melalui Telegram: @vidynnn
+    JIKA ADMIN PADA WEB TIDAK MERESPON, silakan hubungi saya melalui Telegram: https://t.me/vidynnn
 
     DONASI ADMIN jika Anda merasa terbantu dengan alat ini.
 
