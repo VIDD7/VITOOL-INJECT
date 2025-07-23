@@ -19,14 +19,20 @@ Alat ini dirancang untuk membantu Anda mengelola akun reseller Melinda Store dan
 
 Ikuti perintah di bawah ini di terminal Anda untuk menjalankan VITOOL:
 
+# 1. Update dan upgrade paket sistem
     apt update && apt upgrade -y
 
-    pip install requests -y
+# 2. Install Python3 dan pip (pip3 untuk Python3)
+    apt install python3 python3-pip -y
 
-    apt install python3 -y
+# 3. Install modul requests menggunakan pip3
+    pip3 install requests
 
+# 4. Pindah ke direktori tool-mu
     cd /INJECTBOY
 
-    python vitool.py
+# 5. Jalankan script Python menggunakan python3
+    python3 vitool.py
+
 
   SEMOGA BERMANFAAT !
