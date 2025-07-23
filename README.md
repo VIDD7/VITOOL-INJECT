@@ -12,9 +12,9 @@ FUNGSI:
 4. MEMPERCEPAT PROSSES TRX
 
 STEPS:
-pip install requests -y
-apt install python3 -y
-cd /INJECTBOY
+pip install requests -y <br>
+apt install python3 -y <br>
+cd /INJECTBOY <br>
 python vitool.py
 
 SEMOGA BERGUNA !
