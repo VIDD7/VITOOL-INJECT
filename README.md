@@ -11,4 +11,10 @@ FUNGSI:
 3. MANAGEMENT AKRAB LENGKAP
 4. MEMPERCEPAT PROSSES TRX
 
+STEPS:
+pip install requests -y
+apt install python3 -y
+cd /INJECTBOY
+python vitool.py
+
 SEMOGA BERGUNA !
