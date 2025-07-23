@@ -26,10 +26,10 @@ Ikuti perintah di bawah ini di terminal Anda untuk menjalankan VITOOL:
     apt install git python3 python3-pip -y
 
  # 4. Clone repository dari GitHub
-    git clone https://github.com/VIDD7/vitool.git
+    git clone https://github.com/VIDD7/VITOOL-INJECT.git
 
 #  5. Masuk ke direktori tool
-    cd vitool
+    cd VITOOL-INJECT
 
 #  6. Install dependency yang dibutuhkan (requests)
     pip3 install requests
@@ -38,4 +38,4 @@ Ikuti perintah di bawah ini di terminal Anda untuk menjalankan VITOOL:
     python3 vitool.py
 
 
-#  SEMOGA BERMANFAAT !
+#  SEMOGA BERMANFAAT
