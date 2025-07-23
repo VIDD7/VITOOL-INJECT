@@ -11,7 +11,7 @@ FUNGSI:
 3. MANAGEMENT AKRAB LENGKAP
 4. MEMPERCEPAT PROSSES TRX
 
-STEPS:
+STEPS: <br>
 pip install requests -y <br>
 apt install python3 -y <br>
 cd /INJECTBOY <br>
