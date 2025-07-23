@@ -12,9 +12,10 @@ FUNGSI:
 4. MEMPERCEPAT PROSSES TRX
 
 STEPS: <br>
+apt update && apt upgrade -y
 pip install requests -y <br>
 apt install python3 -y <br>
 cd /INJECTBOY <br>
 python vitool.py
 
-SEMOGA BERGUNA !
+SEMOGA BERMANFAAT !
