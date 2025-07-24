@@ -845,97 +845,30 @@ def manajemen_akrab_menu(email, password, api_key):
             print(f"{Colors.FAIL}Pilihan tidak valid. Silakan coba lagi.{Colors.ENDC}")
             input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
-def fitur_lainnya_menu(email, password, api_key):
-    """Menampilkan menu untuk fitur-fitur lainnya."""
-    while True:
-        os.system('cls' if os.name == 'nt' else 'clear') # CLEAR SCREEN
-        print(f"\n{Colors.HEADER}{Colors.BOLD}--- Fitur Keren Lainnya ---{Colors.ENDC}")
-        print(f"{Colors.PRIMARY}1. Unreg Paket{Colors.ENDC}")
-        print(f"{Colors.PRIMARY}2. Cek Stok Akrab{Colors.ENDC}")
-        print(f"{Colors.PRIMARY}3. Kembali ke Menu Utama{Colors.ENDC}")
-        pilihan = input(f"{Colors.WARNING}Pilih opsi: {Colors.ENDC}").strip()
-
-        if pilihan == '1':
-            no_hp, access_token = login_otp_flow(email, password, api_key)
-            if not access_token:
-                print(f"{Colors.FAIL}Proses login OTP gagal. Kembali ke menu.{Colors.ENDC}")
-                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
-                continue
-            
-            paket_aktif_data = detail_paket(email, password, api_key, access_token)
-            if not paket_aktif_data or not paket_aktif_data.get('status'):
-                print(f"{Colors.FAIL}Gagal mengambil daftar paket aktif: {paket_aktif_data.get('message', 'Error')}{Colors.ENDC}")
-                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
-                continue
-
-            paket_aktif_list = paket_aktif_data.get('data', {}).get('quotas', [])
-            if not paket_aktif_list:
-                print(f"{Colors.WARNING}Tidak ada paket aktif yang ditemukan.{Colors.ENDC}")
-                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
-                continue
-
-            print(f"\n{Colors.HEADER}--- Daftar Paket Aktif ---{Colors.ENDC}")
-            for i, paket in enumerate(paket_aktif_list):
-                print(f"{Colors.PRIMARY}{i + 1}. {paket['name']} (Aktif sampai: {paket['expired_at']}){Colors.ENDC}")
-            
-            try:
-                pilihan_paket = int(input(f"{Colors.WARNING}Pilih paket yang akan di-unreg (1-{len(paket_aktif_list)}), atau 0 untuk kembali: {Colors.ENDC}").strip())
-                if 0 <= pilihan_paket <= len(paket_aktif_list):
-                    if pilihan_paket == 0:
-                        print(f"{Colors.INFO}Unreg paket dibatalkan.{Colors.ENDC}")
-                        input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
-                        continue
-                    paket_terpilih = paket_aktif_list[pilihan_paket - 1]
-                    data_unreg = {
-                        "nadiastore": api_key,
-                        "no_hp": no_hp,
-                        "access_token": access_token,
-                        "encrypted_package_code": paket_terpilih['encrypted_package_code'],
-                        "name": paket_terpilih['name'],
-                        "price_or_or_fee": 0 # Asumsi unreg tidak ada biaya, atau diambil dari list unreg jika ada
-                    }
-                    unreg_res = unreg_paket(email, password, api_key, data_unreg)
-                    if unreg_res and unreg_res.get('status'):
-                        print(f"{Colors.SUCCESS}Berhasil unreg paket!{Colors.ENDC}")
-                    else:
-                        print(f"{Colors.FAIL}Gagal unreg paket: {unreg_res.get('message', 'Error')}{Colors.ENDC}")
-                else:
-                    print(f"{Colors.FAIL}Pilihan tidak valid.{Colors.ENDC}")
-                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
-            except ValueError:
-                print(f"{Colors.FAIL}Masukkan nomor yang valid.{Colors.ENDC}")
-                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
-
-        elif pilihan == '2':
-            print(f"\n{Colors.HEADER}--- Cek Stok Paket Akrab ---{Colors.ENDC}")
-            stok_data = cek_stok_akrab(email, password, api_key)
-            if stok_data and stok_data.get('status'):
-                stok_list = stok_data.get('data', [])
-                print(f"{Colors.ACCENT}{'-' * 40}{Colors.ENDC}")
-                print(f"{Colors.BOLD}{'Nama Paket':<30}{'Stok':<10}{Colors.ENDC}")
-                print(f"{Colors.ACCENT}{'-' * 40}{Colors.ENDC}")
-                for item in stok_list:
-                    print(f"{Colors.PRIMARY}{item['show_name']:<30}{item['stock']:<10}{Colors.ENDC}")
-                print(f"{Colors.ACCENT}{'-' * 40}{Colors.ENDC}")
-            else:
-                print(f"{Colors.FAIL}Gagal cek stok: {stok_data.get('message', 'Error')}{Colors.ENDC}")
-            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
-
-        elif pilihan == '3':
-            break
-        else:
-            print(f"{Colors.FAIL}Pilihan tidak valid. Silakan coba lagi.{Colors.ENDC}")
-            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
-
 def show_donate_menu():
+    """Menampilkan menu donasi dengan redirect tanpa konfirmasi."""
+    DONATE_LINK = "https://saweria.co/VSTRA" # Link donasi Anda
+
     os.system('cls' if os.name == 'nt' else 'clear')
-    print(f"\n{Colors.HEADER}{Colors.BOLD}       Terima kasih atas dukungan Anda!{Colors.ENDC}")
-    print(f"\n{Colors.ACCENT}================================================{Colors.ENDC}")
-    print(f"{Colors.BOLD}Silakan kunjungi tautan berikut untuk berdonasi:{Colors.ENDC}")
-    print(f"{Colors.PRIMARY}          https://saweria.co/VSTRA          {Colors.ENDC}") 
-    print(f"{Colors.ACCENT}================================================{Colors.ENDC}")
-    print(f"\n{Colors.WARNING}Tekan Enter jika sudah donate...{Colors.ENDC}")
-    input()
+    print(f"{Colors.PRIMARY}Silakan kunjungi tautan berikut untuk berdonasi:{Colors.ENDC}")
+    print(f"{Colors.ACCENT}{Colors.BOLD}          {DONATE_LINK}{Colors.ENDC}") 
+    time.sleep(3)
+
+    # Validasi tautan donasi (opsional, bisa disesuaikan)
+    if not (DONATE_LINK.startswith("http://") or DONATE_LINK.startswith("https://")):
+        print(f"{Colors.FAIL}Error: Tautan donasi tidak valid. Harap periksa DONATE_LINK di kode.{Colors.ENDC}")
+        input(f"\n{Colors.ACCENT}Tekan Enter untuk kembali...{Colors.ENDC}")
+        return # Keluar dari fungsi jika tautan tidak valid
+
+    webbrowser.open(DONATE_LINK)
+    time.sleep(2) # Beri sedikit waktu untuk browser terbuka
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+    # Pesan informasi setelah redirect, tanpa konfirmasi
+    print(f"{Colors.SUCCESS}Terima kasih telah mengunjungi tautan donasi! Kembali ke menu utama...{Colors.ENDC}")
+    time.sleep(1)
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 
 def type_effect(text, color=Colors.PRIMARY, delay=0.01):
     """Menampilkan teks dengan efek ketikan."""
@@ -975,25 +908,32 @@ def main_menu():
     GITHUB_LINK = "https://github.com/VIDD7"
     
     while True:
-        print(f"\n{Colors.HEADER}--- Ikuti Akun GitHub Saya ---{Colors.ENDC}")
-        time.sleep(1)
-        webbrowser.open(GITHUB_LINK)
+        os.system('cls' if os.name == 'nt' else 'clear') # Membersihkan layar setiap iterasi
+        print(f"\n{Colors.PRIMARY}{Colors.BOLD}Untuk melanjutkan, mohon kunjungi dan ikuti akun GitHub saya:{Colors.ENDC}")
         time.sleep(2)
+        
+        # Validasi tautan GitHub
+        if not GITHUB_LINK.startswith("https://github.com/"):
+            print(f"{Colors.FAIL}Error: Tautan GitHub tidak valid. Harap periksa GITHUB_LINK di kode.{Colors.ENDC}")
+            sys.exit(1) # Keluar dari program jika tautan tidak valid
+
+        webbrowser.open(GITHUB_LINK)
+        time.sleep(2) # Beri sedikit waktu untuk browser terbuka
         os.system('cls' if os.name == 'nt' else 'clear')
 
         konfirmasi_follow = input(f"{Colors.WARNING}Sudahkah Anda mengikuti akun GitHub saya? (y/n): {Colors.ENDC}").strip().lower()
         if konfirmasi_follow == 'y':
             print(f"{Colors.SUCCESS}Terima kasih telah mengikuti! Melanjutkan program...{Colors.ENDC}")
+            time.sleep(1)
             os.system('cls' if os.name == 'nt' else 'clear')
             break
         elif konfirmasi_follow == 'n':
             print(f"{Colors.INFO}Mohon ikuti akun GitHub terlebih dahulu untuk melanjutkan.{Colors.ENDC}")
             time.sleep(2)
-            os.system('cls' if os.name == 'nt' else 'clear')
+            # Loop akan berlanjut, membuka kembali tautan
         else:
             print(f"{Colors.FAIL}Input tidak valid. Harap jawab 'y' atau 'n'.{Colors.ENDC}")
             time.sleep(1)
-            os.system('cls' if os.name == 'nt' else 'clear')
     # --- GitHub Redirect END ---
 
     print("\n" + Colors.ACCENT + "="*60 + Colors.ENDC) 
@@ -1065,7 +1005,7 @@ def main_menu():
         animate_ascii_logo(vitool_logo_ascii, Colors.ACCENT) 
 
         print(f"{Colors.PRIMARY}{Colors.BOLD}Logged in: {email}{Colors.ENDC}")
-        print(f"{Colors.INFO}Github: https://github.com/VIDD7{Colors.ENDC}")
+        print(f"{Colors.INFO}Github: {GITHUB_LINK}{Colors.ENDC}") # Menggunakan GITHUB_LINK yang sudah didefinisikan
         print(f"{Colors.INFO}Website: https://vstra.my.id{Colors.ENDC}")
         print(Colors.HEADER + "="*47 + Colors.ENDC) 
         
