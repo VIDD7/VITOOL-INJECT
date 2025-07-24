@@ -5,6 +5,7 @@ import os
 import sys
 import threading
 import re # Import modul regex untuk validasi email
+import webbrowser # Import modul webbrowser untuk membuka link
 
 # --- KONFIGURASI ---
 # Ganti URL ini jika Anda memiliki endpoint callback untuk menerima status transaksi.
@@ -181,7 +182,7 @@ def get_otp(email_anda: str, password_anda: str, key_anda: str, no_hp: str) -> d
     url = "https://api.melinda-store.my.id/v2/get_otp"
     data = {"nadiastore": key_anda, "no_hp": no_hp, "metode": "OTP"}
     auth = (email_anda, password_anda)
-    return make_post_request(url, data, auth, timeout=90) # Timeout lebih lama untuk OTP
+    return make_post_request(url, data, timeout=90, auth=auth) # Timeout lebih lama untuk OTP
 
 def login_sms(email_anda: str, password_anda: str, key_anda: str, no_hp: str, auth_id: str, kode_otp: str) -> dict:
     url = "https://api.melinda-store.my.id/v2/login_sms"
@@ -530,6 +531,7 @@ def manajemen_akrab_menu(email, password, api_key):
         return
 
     while True:
+        os.system('cls' if os.name == 'nt' else 'clear') # CLEAR SCREEN
         print(f"\n{Colors.HEADER}{Colors.BOLD}--- Opsi Manajemen Akrab ---{Colors.ENDC}")
         print(f"{Colors.PRIMARY}1. Detail Pengelola Akrab (termasuk anggota){Colors.ENDC}")
         print(f"{Colors.PRIMARY}2. Undang Anggota Baru{Colors.ENDC}")
@@ -547,6 +549,7 @@ def manajemen_akrab_menu(email, password, api_key):
             detail_data = detail_pengelola(email, password, api_key, no_hp)
             if not detail_data or not detail_data.get("status"):
                 print(f"{Colors.FAIL}Gagal mendapatkan detail pengelola: {detail_data.get('message', 'Error tidak diketahui')}{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
 
             parent_data = detail_data.get('data', {}).get('parent_data', {})
@@ -573,6 +576,7 @@ def manajemen_akrab_menu(email, password, api_key):
                     slot_status = "Dihapus" if member.get('is_slot_has_been_deleted') else ("Kosong" if not member.get('member_msisdn') else "Aktif")
                     print(f"{Colors.PRIMARY}{i + 1:<5}{member_no:<20}{member_alias:<20}{quota_allocated:<25}{slot_status:<10}{Colors.ENDC}")
                 print(f"{Colors.ACCENT}{'-' * 80}{Colors.ENDC}")
+            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '2': # Undang Anggota Baru
             slot_kosong_ditemukan = False
@@ -587,12 +591,14 @@ def manajemen_akrab_menu(email, password, api_key):
                         package_id_invite, price_invite = get_package_info_by_type(email, password, api_key, 'invite')
                         if not package_id_invite:
                             print(f"{Colors.FAIL}Gagal mendapatkan Package ID untuk invite anggota. Pembelian tidak dapat dilanjutkan.{Colors.ENDC}")
+                            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                             continue
 
                         new_member_no_input = input(f"{Colors.WARNING}Masukkan nomor anggota baru (contoh: 081234567890) atau 'batal' untuk kembali: {Colors.ENDC}").strip()
                         if new_member_no_input.lower() == 'batal': continue
                         if not (new_member_no_input.isdigit() and len(new_member_no_input) > 9):
                             print(f"{Colors.FAIL}Nomor telepon tidak valid. Harap masukkan nomor yang benar.{Colors.ENDC}")
+                            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                             continue
                         new_member_no = format_phone_number(new_member_no_input)
 
@@ -602,6 +608,7 @@ def manajemen_akrab_menu(email, password, api_key):
                         konfirmasi = input(f"{Colors.WARNING}Yakin ingin mengundang {new_member_no} ke slot {member['slot_id']}? (y/n): {Colors.ENDC}").strip().lower()
                         if konfirmasi != 'y':
                             print(f"{Colors.INFO}Undangan dibatalkan.{Colors.ENDC}")
+                            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                             continue
 
                         data_invite = {
@@ -621,21 +628,25 @@ def manajemen_akrab_menu(email, password, api_key):
                             print(f"{Colors.SUCCESS}Berhasil mengirim undangan!{Colors.ENDC}")
                         else:
                             print(f"{Colors.FAIL}Gagal mengundang: {invite_res.get('message', 'Error')}{Colors.ENDC}")
+                        input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                         break # Keluar dari loop setelah menemukan dan mencoba mengundang ke satu slot kosong
                 
                 if not slot_kosong_ditemukan:
                     print(f"{Colors.WARNING}Tidak ada slot kosong yang tersedia untuk diundang.{Colors.ENDC}")
             else:
                 print(f"{Colors.FAIL}Gagal mendapatkan detail pengelola untuk mencari slot kosong: {detail_data.get('message', 'Error tidak diketahui')}{Colors.ENDC}")
+            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '3' or pilihan == '4':
             detail_data = detail_pengelola(email, password, api_key, no_hp)
             if not detail_data or not detail_data.get("status"):
                 print(f"{Colors.FAIL}Gagal mendapatkan detail pengelola: {detail_data.get('message', 'Error tidak diketahui')}{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
             members = [m for m in detail_data.get('data', {}).get('members_slot_data_from_our_database', []) if m.get('member_msisdn')]
             if not members:
                 print(f"{Colors.WARNING}Tidak ada anggota aktif untuk dipilih.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
 
             print(f"\n{Colors.HEADER}{Colors.BOLD}--- Pilih Anggota ---{Colors.ENDC}")
@@ -649,6 +660,7 @@ def manajemen_akrab_menu(email, password, api_key):
                         print(f"{Colors.INFO}Operasi dibatalkan.{Colors.ENDC}")
                     else:
                         print(f"{Colors.FAIL}Pilihan tidak valid.{Colors.ENDC}")
+                    input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                     continue
                 member_terpilih = members[pilihan_member_idx]
 
@@ -658,9 +670,11 @@ def manajemen_akrab_menu(email, password, api_key):
                         kuota_gb = float(kuota_gb_input)
                         if kuota_gb < 0:
                             print(f"{Colors.FAIL}Kuota tidak bisa negatif.{Colors.ENDC}")
+                            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                             continue
                     except ValueError:
                         print(f"{Colors.FAIL}Input kuota tidak valid. Harap masukkan angka.{Colors.ENDC}")
+                        input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                         continue
 
                     konfirmasi = input(f"{Colors.WARNING}Yakin ingin mengatur kuota {member_terpilih['member_msisdn']} menjadi {kuota_gb} GB? (y/n): {Colors.ENDC}").lower()
@@ -678,6 +692,7 @@ def manajemen_akrab_menu(email, password, api_key):
                             print(f"{Colors.FAIL}Gagal mengatur kuota: {set_res.get('message', 'Error')}{Colors.ENDC}")
                     else:
                         print(f"{Colors.INFO}Pengaturan kuota dibatalkan.{Colors.ENDC}")
+                    input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
                 elif pilihan == '4': # Keluarkan Anggota
                     konfirmasi = input(f"{Colors.WARNING}Yakin ingin mengeluarkan {member_terpilih['member_msisdn']}? (y/n): {Colors.ENDC}").lower()
@@ -694,25 +709,32 @@ def manajemen_akrab_menu(email, password, api_key):
                             print(f"{Colors.FAIL}Gagal mengeluarkan anggota: {kick_res.get('message', 'Error')}{Colors.ENDC}")
                     else:
                         print(f"{Colors.INFO}Pengeluaran anggota dibatalkan.{Colors.ENDC}")
+                    input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
             except ValueError:
                 print(f"{Colors.FAIL}Masukkan nomor yang valid.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '5': # Tambah Pengelola Akrab Baru
             package_id_pa, price_pa = get_package_info_by_type(email, password, api_key, 'pa')
             if not package_id_pa:
                 print(f"{Colors.FAIL}Gagal mendapatkan Package ID untuk tambah pengelola. Operasi dibatalkan.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
 
             new_parent_msisdn_input = input(f"{Colors.WARNING}Masukkan nomor telepon pengelola baru (contoh: 081234567890) atau 'batal' untuk kembali: {Colors.ENDC}").strip()
-            if new_parent_msisdn_input.lower() == 'batal': continue
+            if new_parent_msisdn_input.lower() == 'batal': 
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
+                continue
             if not (new_parent_msisdn_input.isdigit() and len(new_parent_msisdn_input) > 9):
                 print(f"{Colors.FAIL}Nomor telepon tidak valid. Harap masukkan nomor yang benar.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
             new_parent_msisdn = format_phone_number(new_parent_msisdn_input)
 
             konfirmasi = input(f"{Colors.WARNING}Yakin ingin menambahkan {new_parent_msisdn} sebagai pengelola baru? (y/n): {Colors.ENDC}").strip().lower()
             if konfirmasi != 'y':
                 print(f"{Colors.INFO}Penambahan pengelola dibatalkan.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
 
             add_res = add_pengelola(email, password, api_key, package_id_pa, new_parent_msisdn, price_pa)
@@ -727,6 +749,7 @@ def manajemen_akrab_menu(email, password, api_key):
                     print(f"{Colors.INFO}- Aktif Sampai: {data_res.get('end_date')}{Colors.ENDC}")
             else:
                 print(f"{Colors.FAIL}Gagal menambahkan pengelola: {add_res.get('message', 'Error')}{Colors.ENDC}")
+            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '6': # Lihat Daftar Pengelola Akrab
             print(f"\n{Colors.HEADER}{Colors.BOLD}--- Daftar Pengelola Akrab ---{Colors.ENDC}")
@@ -744,17 +767,20 @@ def manajemen_akrab_menu(email, password, api_key):
                     print(f"{Colors.WARNING}Tidak ada pengelola akrab yang terdaftar.{Colors.ENDC}")
             else:
                 print(f"{Colors.FAIL}Gagal mengambil daftar pengelola: {list_pengelola_data.get('message', 'Error')}{Colors.ENDC}")
+            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '7': # Hapus Pengelola Akrab
             print(f"\n{Colors.HEADER}{Colors.BOLD}--- Hapus Pengelola Akrab ---{Colors.ENDC}")
             list_pengelola_data = get_list_pengelola(email, password, api_key)
             if not list_pengelola_data or not list_pengelola_data.get('status'):
                 print(f"{Colors.FAIL}Gagal mengambil daftar pengelola untuk dihapus: {list_pengelola_data.get('message', 'Error')}{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
             
             pengelola_list = list_pengelola_data.get('data', [])
             if not pengelola_list:
                 print(f"{Colors.WARNING}Tidak ada pengelola untuk dihapus.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
 
             print(f"{Colors.ACCENT}{'-' * 80}{Colors.ENDC}")
@@ -771,6 +797,7 @@ def manajemen_akrab_menu(email, password, api_key):
                         print(f"{Colors.INFO}Penghapusan pengelola dibatalkan.{Colors.ENDC}")
                     else:
                         print(f"{Colors.FAIL}Pilihan tidak valid.{Colors.ENDC}")
+                    input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                     continue
                 pengelola_terpilih = pengelola_list[pilihan_pengelola_idx]
 
@@ -783,13 +810,16 @@ def manajemen_akrab_menu(email, password, api_key):
                         print(f"{Colors.FAIL}Gagal menghapus pengelola: {delete_res.get('message', 'Error')}{Colors.ENDC}")
                 else:
                     print(f"{Colors.INFO}Penghapusan pengelola dibatalkan.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
             except ValueError:
                 print(f"{Colors.FAIL}Masukkan nomor yang valid.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '8': # Beli Slot Akrab Tambahan
             package_id_bes, price_bes = get_package_info_by_type(email, password, api_key, 'bes')
             if not package_id_bes:
                 print(f"{Colors.FAIL}Gagal mendapatkan Package ID untuk beli extra slot. Operasi dibatalkan.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
             
             # Asumsi parent_msisdn adalah nomor yang sedang login
@@ -798,6 +828,7 @@ def manajemen_akrab_menu(email, password, api_key):
             konfirmasi = input(f"{Colors.WARNING}Yakin ingin membeli slot tambahan untuk pengelola {current_parent_msisdn} seharga Rp. {price_bes:,}? (y/n): {Colors.ENDC}").strip().lower()
             if konfirmasi != 'y':
                 print(f"{Colors.INFO}Pembelian slot dibatalkan.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
 
             beli_slot_res = beli_extra_slot(email, password, api_key, package_id_bes, current_parent_msisdn, price_bes)
@@ -806,15 +837,18 @@ def manajemen_akrab_menu(email, password, api_key):
                 print(f"{Colors.INFO}Pesan dari server: {beli_slot_res.get('message')}{Colors.ENDC}")
             else:
                 print(f"{Colors.FAIL}Gagal membeli slot tambahan: {beli_slot_res.get('message', 'Error')}{Colors.ENDC}")
+            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '9':
             break
         else:
             print(f"{Colors.FAIL}Pilihan tidak valid. Silakan coba lagi.{Colors.ENDC}")
+            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
 def fitur_lainnya_menu(email, password, api_key):
     """Menampilkan menu untuk fitur-fitur lainnya."""
     while True:
+        os.system('cls' if os.name == 'nt' else 'clear') # CLEAR SCREEN
         print(f"\n{Colors.HEADER}{Colors.BOLD}--- Fitur Keren Lainnya ---{Colors.ENDC}")
         print(f"{Colors.PRIMARY}1. Unreg Paket{Colors.ENDC}")
         print(f"{Colors.PRIMARY}2. Cek Stok Akrab{Colors.ENDC}")
@@ -825,16 +859,19 @@ def fitur_lainnya_menu(email, password, api_key):
             no_hp, access_token = login_otp_flow(email, password, api_key)
             if not access_token:
                 print(f"{Colors.FAIL}Proses login OTP gagal. Kembali ke menu.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
             
             paket_aktif_data = detail_paket(email, password, api_key, access_token)
             if not paket_aktif_data or not paket_aktif_data.get('status'):
                 print(f"{Colors.FAIL}Gagal mengambil daftar paket aktif: {paket_aktif_data.get('message', 'Error')}{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
 
             paket_aktif_list = paket_aktif_data.get('data', {}).get('quotas', [])
             if not paket_aktif_list:
                 print(f"{Colors.WARNING}Tidak ada paket aktif yang ditemukan.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                 continue
 
             print(f"\n{Colors.HEADER}--- Daftar Paket Aktif ---{Colors.ENDC}")
@@ -846,6 +883,7 @@ def fitur_lainnya_menu(email, password, api_key):
                 if 0 <= pilihan_paket <= len(paket_aktif_list):
                     if pilihan_paket == 0:
                         print(f"{Colors.INFO}Unreg paket dibatalkan.{Colors.ENDC}")
+                        input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
                         continue
                     paket_terpilih = paket_aktif_list[pilihan_paket - 1]
                     data_unreg = {
@@ -863,8 +901,10 @@ def fitur_lainnya_menu(email, password, api_key):
                         print(f"{Colors.FAIL}Gagal unreg paket: {unreg_res.get('message', 'Error')}{Colors.ENDC}")
                 else:
                     print(f"{Colors.FAIL}Pilihan tidak valid.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
             except ValueError:
                 print(f"{Colors.FAIL}Masukkan nomor yang valid.{Colors.ENDC}")
+                input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '2':
             print(f"\n{Colors.HEADER}--- Cek Stok Paket Akrab ---{Colors.ENDC}")
@@ -879,11 +919,13 @@ def fitur_lainnya_menu(email, password, api_key):
                 print(f"{Colors.ACCENT}{'-' * 40}{Colors.ENDC}")
             else:
                 print(f"{Colors.FAIL}Gagal cek stok: {stok_data.get('message', 'Error')}{Colors.ENDC}")
+            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
         elif pilihan == '3':
             break
         else:
             print(f"{Colors.FAIL}Pilihan tidak valid. Silakan coba lagi.{Colors.ENDC}")
+            input(f"\n{Colors.ACCENT}Tekan Enter untuk melanjutkan...{Colors.ENDC}")
 
 def show_donate_menu():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -929,13 +971,38 @@ def main_menu():
 
     os.system('cls' if os.name == 'nt' else 'clear') # Membersihkan layar di awal
     
+    # --- GitHub Redirect START ---
+    GITHUB_LINK = "https://github.com/VIDD7"
+    
+    while True:
+        print(f"\n{Colors.HEADER}--- Ikuti Akun GitHub Saya ---{Colors.ENDC}")
+        time.sleep(1)
+        webbrowser.open(GITHUB_LINK)
+        time.sleep(2)
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        konfirmasi_follow = input(f"{Colors.WARNING}Sudahkah Anda mengikuti akun GitHub saya? (y/n): {Colors.ENDC}").strip().lower()
+        if konfirmasi_follow == 'y':
+            print(f"{Colors.SUCCESS}Terima kasih telah mengikuti! Melanjutkan program...{Colors.ENDC}")
+            os.system('cls' if os.name == 'nt' else 'clear')
+            break
+        elif konfirmasi_follow == 'n':
+            print(f"{Colors.INFO}Mohon ikuti akun GitHub terlebih dahulu untuk melanjutkan.{Colors.ENDC}")
+            time.sleep(2)
+            os.system('cls' if os.name == 'nt' else 'clear')
+        else:
+            print(f"{Colors.FAIL}Input tidak valid. Harap jawab 'y' atau 'n'.{Colors.ENDC}")
+            time.sleep(1)
+            os.system('cls' if os.name == 'nt' else 'clear')
+    # --- GitHub Redirect END ---
+
     print("\n" + Colors.ACCENT + "="*60 + Colors.ENDC) 
-    type_effect("                Selamat Datang di VITOOL!", Colors.HEADER, 0.05)
-    time.sleep(0.5)
+    type_effect("                Selamat Datang di VITOOL!", Colors.HEADER, 0.03)
+    time.sleep(0.3)
     type_effect("  Platform Manajemen Akrab & Pembelian Paket Data XL/AXIS", Colors.INFO, 0.03)
-    time.sleep(0.5)
+    time.sleep(0.3)
     print(Colors.ACCENT + "="*60 + Colors.ENDC + "\n") 
-    time.sleep(0.5)
+    time.sleep(0.3)
 
     if kredensial:
         print(f"\n{Colors.HEADER}{Colors.BOLD}--- Kredensial Ditemukan ---{Colors.ENDC}")
@@ -1010,7 +1077,7 @@ def main_menu():
             "4. Cek Status Transaksi",
             "5. Manajemen Akrab",
             "6. Fitur Keren Lainnya",
-            "7. Donate ke Admin Baik Hati Ini!",
+            "7. Donate ke Admin Baik Hati Ini",
             "8. Keluar"
         ]
         for option in menu_options:
